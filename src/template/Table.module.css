@@ -1,0 +1,56 @@
+.userTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .userTable thead tr {
+    background-color: #1f625b;
+    color: #ffffff;
+    text-align: left;
+  }
+  
+  .userTable th,
+  .userTable td {
+    padding: 12px 15px;
+  }
+  
+  .userTable tbody tr {
+    border-bottom: 1px solid #dddddd;
+  }
+  
+  .userTable tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+  }
+  
+  .userTable tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+  }
+  
+  .userTable tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
+  }
+  
+  .userTable tbody tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+  }
+  
+  .deleteButton {
+    padding: 5px 10px;
+    background-color: #a71b1b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .deleteButton:hover {
+    background-color: #e54242;
+  }
