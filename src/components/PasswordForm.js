@@ -1,129 +1,80 @@
-import React, { useState } from "react";
-import styles from '../template/PasswordForm.module.css';
+import React, { useState } from 'react';
 import Navbar from "./Navbar";
-import { useNavigate } from 'react-router-dom';
-import Swal from "sweetalert2";
+import styles from '../template/PasswordForm.module.css';
 import axios from '../utils/axios'
+import { useNavigate } from 'react-router-dom';
 
 
-
-export default function PasswordGenerate() {
+const PasswordGenerator = () => {
+    const [generatedPassword, setGeneratedPassword] = useState('');
+    const [passwordLength, setPasswordLength] = useState(9);
+    const [includeUppercase, setIncludeUppercase] = useState(true);
+    const [includeLowercase, setIncludeLowercase] = useState(true);
+    const [includeNumbers, setIncludeNumbers] = useState(true);
+    const [includeSymbols, setIncludeSymbols] = useState(true);
     const navigate = useNavigate();
-    const [inputs, setInputs] = useState({
-        username: "",
-        password: ""
-    });
-    const handleChange = (e) => {
-        setInputs((prevState) => ({
-            ...prevState,
-            [e.target.name]: e.target.value,
-        }));
-    };
-    const handleGenerate = (e) => {
-        e.preventDefault();
-        console.log(inputs);
 
-    if (!inputs.username || !inputs.password) {
-        Swal.fire({
-            position: "center",
-            icon: "error",
-            title: "Please fill in all fields",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          return;
-    }
-    if (!isValidPassword(inputs.password)){
-        Swal.fire({
-            position: "center",
-            icon: "warning",
-            title: "Your password must contain at least one uppercase letter, one lowercase letter, and one number.",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          return;
-    }
-    console.log(inputs);
-        const data = {
-            username: inputs.username,
-            password: inputs.password,
-        };
+    const handleGeneratePassword = (e) => {
+        e.preventDefault();
         axios
-            .post("api/generate/", data)
-            .then((response) => {
-                console.log("Getting a data",response.data);
-                if (response.status === 409) {
-                    console.log("Response's here");
-                    Swal.fire({
-                        position: "center",
-                        icon: "warning",
-                        title: "Username Already has an Account",
-                        showConfirmButton: false,
-                        timer: 1500,
-                      });
-                } else if (response.status === 200) {
-                    Swal.fire({
-                        position: "center",
-                        icon: "success",
-                        title: "Success",
-                        showConfirmButton: false,
-                        timer: 1500,
-                      });
-                } else {
-                    Swal.fire({
-                        position: "center",
-                        icon: "success",
-                        title: "Success",
-                        showConfirmButton: false,
-                        timer: 1500,
-                      });
-                    navigate("/home");
-                }
-            });
-        };
-            const isValidPassword = (password) => {
-                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
-                return passwordRegex.test(password);
-            }
-        return (
-            <div>
+             .post("api/generate/", {
+                length: passwordLength,
+                includeUppercase,
+                includeLowercase,
+                includeNumbers,
+                includeSymbols
+             })
+             .then((response) => {
+                console.log("Response is",response);
+                setGeneratedPassword(response.data.password);
+             })
+             .catch(error => {
+                console.error("Error generating password", error)
+             });
+    };
+    const handleCopyPassword = () => {
+        navigator.clipboard.writeText(generatedPassword).then(() => {
+            alert('Password copied to clipboard!');
+        });
+    };
+
+    return (
+        <div className={styles.container}>
             <Navbar/>
-            <section className={styles.customSection}>
-                <div className={styles.contentContainer}>
-                    <div className={styles.formContainer}>
-                        <div className={styles.formContent}>
-                            <h1 className={styles.title}>Generate Password</h1>
-                            <form className={styles.form} onSubmit={handleGenerate}>
-                                <div className={styles.inputGroup}>
-                                    <label htmlFor="name" className={styles.label}>Your name</label>
-                                    <input 
-                                    value={inputs.username}
-                                    onChange={handleChange}
-                                    type="username" 
-                                    name="username" 
-                                    id="username" 
-                                    className={styles.input} 
-                                    placeholder="Your sweet name"/>
-                                </div>
-                                <div className={styles.inputGroup}>
-                                    <label htmlFor="password" className={styles.label}>Password</label>
-                                    <input 
-                                    value={inputs.password}
-                                    onChange={handleChange}
-                                    type="password" 
-                                    name="password" 
-                                    id="password" 
-                                    className={styles.input} 
-                                    placeholder="••••••••"/>
-                                </div>
-                                <button type="submit" className={styles.submitButton}>
-                                    Generate
-                                </button>
-                            </form>
-                        </div>
-                    </div>
+            <div className={styles.passwordGeneratorContainer}>
+                <h1>PASSWORD GENERATOR</h1>
+                <div className={styles.formControl}>
+                    <label>Password Length: {passwordLength}</label>
+                    <input type="range" min="6" max="20" value={passwordLength} onChange={(e) => setPasswordLength(e.target.value)} />
                 </div>
-            </section>
+                <div className={styles.formControl}>
+                    <label><input type="checkbox" checked={includeUppercase} onChange={(e) => setIncludeUppercase(e.target.checked)} /> Uppercase</label>
+                    <label><input type="checkbox" checked={includeLowercase} onChange={(e) => setIncludeLowercase(e.target.checked)} /> Lowercase</label>
+                    <label><input type="checkbox" checked={includeNumbers} onChange={(e) => setIncludeNumbers(e.target.checked)} /> Numbers</label>
+                    <label><input type="checkbox" checked={includeSymbols} onChange={(e) => setIncludeSymbols(e.target.checked)} /> Symbols</label>
+                </div>
+                <button onClick={handleGeneratePassword}>Generate</button>
+                {generatedPassword && (
+                <div className={styles.generatedPasswordDisplay}>
+                    <input type="text" value={generatedPassword} readOnly />
+                    <button onClick={handleCopyPassword}>Copy</button>
+                    <button onClick={() => navigate('/home')}>Go to Home</button>
+                </div>
+            )}
             </div>
-        );
-}
+        </div>
+    );
+};
+
+export default PasswordGenerator;
+
+
+
+
+
+
+
+{/* <div className={styles.formControl}>
+    <label>Username</label>
+    <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+</div> */}

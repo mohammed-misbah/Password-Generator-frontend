@@ -29,32 +29,33 @@ const Table = () => {
     }
 
     return (
-        <table className={styles.userTable}>
-            <thead>
-                <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Password</th>
-                <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {users.map(user => (
-                <tr key={user.id}>
-                    <td>{user.id}</td>
-                    <td>{user.username}</td>
-                    <td>{user.password}</td>
-                    <td>
-                    <button className={styles.deleteButton} 
-                    onClick={() => handleDelete(user.id)}>
-                        Delete
-                    </button>
-                    </td>
-                </tr>
-                ))}
-            </tbody>
-        </table>
-
+        <div className={styles.container}>  
+            <table className={styles.userTable}>
+                <thead>
+                    <tr>
+                    <th>ID</th>
+                    {/* <th>Username</th> */}
+                    <th>Password</th>
+                    <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {users.map(user => (
+                        <tr key={user.id}>
+                        <td>{user.id}</td>
+                        {/* <td>{user.username}</td> */}
+                        <td>{user.password}</td>
+                        <td>
+                        <button className={styles.deleteButton} 
+                        onClick={() => handleDelete(user.id)}>
+                            Delete
+                        </button>
+                        </td>
+                    </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
     );
 }
 export default Table;
